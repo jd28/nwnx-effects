@@ -105,7 +105,7 @@ bool CNWNXEffects::OnCreate(gline *config, const char *LogDir)
     // We're resetting to 10. For reasons.
     unsigned char *eff_num_ints = (unsigned char*)0x0817dd37;
     nx_hook_enable_write(eff_num_ints, 1);
-    memset((void *)eff_num_ints, (uint8_t)10, 1);
+    memset((void *)eff_num_ints, (uint8_t)11, 1);
 
     return true;
 }
