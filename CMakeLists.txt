@@ -6,6 +6,7 @@ add_module(effects plugin-effects
 	NWNXEffects
     hooks/h_OnApplyModifyNumAttacks
     hooks/h_OnRemoveModifyNumAttacks
+    hooks/h_UpdateEffectList
 )
 
 set_target_properties(effects PROPERTIES COMPILE_FLAGS

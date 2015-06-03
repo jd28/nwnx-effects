@@ -7,8 +7,12 @@
 #include "pluginlink.h"
 #include "core/pluginlink.h"
 
+#include "hooking.c"
+
 int Hook_OnApplyModifyNumAttacks(CNWSEffectListHandler *ai, CNWSObject *obj, CGameEffect *eff, int a);
 int Hook_OnRemoveModifyNumAttacks(CNWSEffectListHandler *ai, CNWSObject *obj, CGameEffect *eff);
+
+void HookCustomEffectUpdate();
 
 class CNWNXEffects: public CNWNXBase
 {
@@ -17,6 +21,7 @@ public:
 
     bool OnCreate(gline *nwnxConfig, const char *LogDir = NULL);
     char *OnRequest(char *gameObject, char *Request, char *Parameters);
+    unsigned long OnRequestObject(char *gameObject, char *Request);
 
     HANDLE hCustomApply, hCustomRemove;
 
