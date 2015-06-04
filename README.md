@@ -83,15 +83,16 @@ or simply expiring, `on_ceff_remove` is called.
 ## Internals
 
 nwnx_effects uses some effect integers to keep track of needed state. As such,
-the first three integer values are **reserved**. Custom parameters as passed in
-to `EffectCustom()` start at index 2.
+the first four integer values are **reserved**. Custom parameters as passed in
+to `EffectCustom()` start at index 4.
 
 ### CGameEffect->IntList
 
-* `0`: tickrate in seconds
-* `1`: last tick world timer hours
-* `2`: last tick world timer seconds
-* `3` through `9`: user-supplied parameters
+* `0`: Always "0" for custom effects; 1 or larger is legacy ModifyAttacks behaviour.
+* `1`: tickrate in seconds
+* `2`: last tick world timer hours
+* `3`: last tick world timer seconds
+* `4` through `12`: user-supplied parameters
 
 To expand on the available user-supplied parameters and account for the reserved
-values, nwnx_effects raises the default integer list size to 11 (from 8).
+values, nwnx_effects raises the default integer list size to 12 (from 8).

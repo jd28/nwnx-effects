@@ -1,13 +1,5 @@
 #include "NWNXEffects.h"
 
-/**
- * Custom effects integer contents:
- * 0: interval timer in seconds.
- * 1: used internally for CWorldTimer tracking
- * 2: used internally for CWorldTimer tracking
- * 3-9: custom effect parameters - opaque.
- */
-
 extern CNWNXEffects effects;
 
 static CNWSObject *currentObject;
@@ -32,23 +24,23 @@ static CGameEffect** CExoArrayList_Eff__vc_Mid(CExoArrayList<CGameEffect*> *list
 {
     CGameEffect *e = list->Array[idx];
 
-    if (e->Type == EFFECT_TRUETYPE_MODIFYNUMATTACKS) {
+    if (e->Type == EFFECT_TRUETYPE_MODIFYNUMATTACKS && e->GetInteger(0) == 0) {
         CWorldTimer *wt = g_pAppManager->
                           ServerExoApp->
                           GetActiveTimer(currentObject->ObjectID);
 
-        unsigned int desiredTickInterval = e->GetInteger(0);
+        unsigned int desiredTickInterval = e->GetInteger(1);
 
         if (desiredTickInterval > 0) {
-            int lastWorldTimer1 = e->GetInteger(1);
+            int lastWorldTimer1 = e->GetInteger(2);
             if (lastWorldTimer1 == 0) {
                 lastWorldTimer1 = currentWorldTimer1;
-                e->SetInteger(1, currentWorldTimer1);
+                e->SetInteger(2, currentWorldTimer1);
             }
-            int lastWorldTimer2 = e->GetInteger(2);
+            int lastWorldTimer2 = e->GetInteger(3);
             if (lastWorldTimer2 == 0) {
                 lastWorldTimer2 = currentWorldTimer2;
-                e->SetInteger(2, currentWorldTimer2);
+                e->SetInteger(3, currentWorldTimer2);
             }
 
             long unsigned int out1, out2;
@@ -67,8 +59,8 @@ static CGameEffect** CExoArrayList_Eff__vc_Mid(CExoArrayList<CGameEffect*> *list
 
                 effects.currentEffect = NULL;
 
-                e->SetInteger(1, currentWorldTimer1);
-                e->SetInteger(2, currentWorldTimer2);
+                e->SetInteger(2, currentWorldTimer1);
+                e->SetInteger(3, currentWorldTimer2);
             }
         }
     }

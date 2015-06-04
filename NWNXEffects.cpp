@@ -32,7 +32,7 @@ char *CNWNXEffects::OnRequest(char *gameObject, char *Request, char *Parameters)
     }
 
     if (strcmp("GETPARAM", Request) == 0) {
-        uint32_t offset = atoi(Parameters) + 3; /* custom params start at idx 3 */
+        uint32_t offset = atoi(Parameters) + CUSTOM_EFFECT_PROPERTIES_START_AT;
         int retval = -1;
 
         if (currentEffect != NULL && offset >= 0 && offset < currentEffect->NumIntegers)
@@ -46,12 +46,12 @@ char *CNWNXEffects::OnRequest(char *gameObject, char *Request, char *Parameters)
     if (strcmp("SETPARAM", Request) == 0) {
         uint32_t offset, value;
 
-        if (2 != scanf(Parameters, "%d %d", &offset, &value)) {
+        if (2 != sscanf(Parameters, "%d~%d", &offset, &value)) {
             printf("nwnx_effects: usage error; scanf failed for SETPARAM\n");
             return NULL;
         }
 
-        offset += 3; /* custom params start at idx 3 */
+        offset += CUSTOM_EFFECT_PROPERTIES_START_AT;
 
         if (currentEffect != NULL && offset >= 0 && offset < currentEffect->NumIntegers)
             currentEffect->IntList[offset] = value;
@@ -93,19 +93,14 @@ bool CNWNXEffects::OnCreate(gline *config, const char *LogDir)
     hCustomApply  = CreateHookableEvent(EVENT_EFFECTS_CUSTOM_APPLY);
     hCustomRemove = CreateHookableEvent(EVENT_EFFECTS_CUSTOM_REMOVE);
 
-    nx_hook_function((void*)0x0817D22C,
-                     (void*)Hook_OnApplyModifyNumAttacks, 5, NX_HOOK_DIRECT);
-
-    nx_hook_function((void*)0x08177D00,
-                     (void*)Hook_OnRemoveModifyNumAttacks, 5, NX_HOOK_DIRECT);
-
+    HookModifyNumAttacks();
     HookCustomEffectUpdate();
 
     // By default, CGameEffects have 8 integers initialized.
     // We're resetting to 10. For reasons.
     unsigned char *eff_num_ints = (unsigned char*)0x0817dd37;
     nx_hook_enable_write(eff_num_ints, 1);
-    memset((void *)eff_num_ints, (uint8_t)11, 1);
+    memset((void *)eff_num_ints, (uint8_t)12, 1);
 
     return true;
 }

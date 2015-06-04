@@ -9,10 +9,15 @@
 
 #include "hooking.c"
 
-int Hook_OnApplyModifyNumAttacks(CNWSEffectListHandler *ai, CNWSObject *obj, CGameEffect *eff, int a);
-int Hook_OnRemoveModifyNumAttacks(CNWSEffectListHandler *ai, CNWSObject *obj, CGameEffect *eff);
+/**
+ * Internal layout of ModifyNumAttacks has required fields at the front.
+ * User-accessible props start at X - see README.md "Internals".
+ * Don't change this. :)
+ */
+#define CUSTOM_EFFECT_PROPERTIES_START_AT 4
 
 void HookCustomEffectUpdate();
+void HookModifyNumAttacks();
 
 class CNWNXEffects: public CNWNXBase
 {

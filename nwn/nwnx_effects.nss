@@ -87,7 +87,7 @@ int GetCustomEffectInteger(int index)
 void SetCustomEffectInteger(int index, int value)
 {
 	SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!SETPARAM",
-				   IntToString(index) + " " + IntToString(value));
+				   IntToString(index) + "~" + IntToString(value));
 }
 
 void SetCustomEffectFailed()
@@ -108,25 +108,25 @@ effect EffectCustom(int tickInterval = 0,
 {
 	effect ret = EffectModifyAttacks(0);
 
-	if (tickInterval > 0) SetEffectInteger(ret, 0, tickInterval);
+	if (tickInterval > 0) SetEffectInteger(ret, 1, tickInterval);
 
 	// SetEffectInteger(ret, 1, 0); // worldTimerHours
 	// SetEffectInteger(ret, 2, 0); // worldTimerSEconds
-	if (arg0 != 0) SetEffectInteger(ret, 3, arg0);
+	if (arg0 != 0) SetEffectInteger(ret, 4, arg0);
 
-	if (arg1 != 0) SetEffectInteger(ret, 4, arg1);
+	if (arg1 != 0) SetEffectInteger(ret, 5, arg1);
 
-	if (arg2 != 0) SetEffectInteger(ret, 5, arg2);
+	if (arg2 != 0) SetEffectInteger(ret, 6, arg2);
 
-	if (arg3 != 0) SetEffectInteger(ret, 6, arg3);
+	if (arg3 != 0) SetEffectInteger(ret, 7, arg3);
 
-	if (arg4 != 0) SetEffectInteger(ret, 7, arg4);
+	if (arg4 != 0) SetEffectInteger(ret, 8, arg4);
 
-	if (arg5 != 0) SetEffectInteger(ret, 8, arg5);
+	if (arg5 != 0) SetEffectInteger(ret, 9, arg5);
 
-	if (arg6 != 0) SetEffectInteger(ret, 9, arg6);
+	if (arg6 != 0) SetEffectInteger(ret, 10, arg6);
 
-	if (arg7 != 0) SetEffectInteger(ret, 10, arg7);
+	if (arg7 != 0) SetEffectInteger(ret, 11, arg7);
 
 	return ret;
 }
