@@ -36,6 +36,7 @@
 void HookCustomEffectUpdate();
 void HookGetScriptEffectType();
 void HookEffectHandlers();
+void HookExecuteCommandApplyEffectOnObject();
 
 /**
  * A struct that describes attached data to effects. It's used to carry

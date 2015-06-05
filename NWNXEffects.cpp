@@ -163,6 +163,7 @@ bool CNWNXEffects::OnCreate(gline *config, const char *LogDir)
     HookGetScriptEffectType();
     HookEffectHandlers();
     HookCustomEffectUpdate();
+    HookExecuteCommandApplyEffectOnObject();
 
     // By default, CGameEffects have 8 integers initialized.
     // We're resetting to 12. For reasons.
