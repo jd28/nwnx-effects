@@ -1,6 +1,46 @@
 #include "NWNXEffects.h"
 
+/**
+ * This hooks into CNWSObject::UpdateEffectsList (which is actually called
+ * by ::AIUpdate). We're using it to run tick scripts for custom effects and
+ * those enabled explicitly.
+ */
+
 extern CNWNXEffects effects;
+
+static void TickEffect(CNWSObject* owner, CGameEffect *eff,
+                       AttachedEffectData *tickData,
+                       unsigned int hr, unsigned int sec)
+{
+    // No tickdata set or no ticks requested.
+    if (!tickData || tickData->tickRate <= 0)
+        return;
+
+    printf("tickData: %d\n", tickData->tickRate);
+
+    CWorldTimer *wt = g_pAppManager->
+                      ServerExoApp->
+                      GetActiveTimer(owner->ObjectID);
+
+    if (tickData->worldTimerBig == 0)
+        tickData->worldTimerBig = hr;
+    if (tickData->worldTimerLittle == 0)
+        tickData->worldTimerLittle = sec;
+
+    long unsigned int out1, out2;
+    int ret = wt->SubtractWorldTimes(
+                  hr, sec,
+                  tickData->worldTimerBig, tickData->worldTimerLittle,
+                  &out1, &out2);
+
+    if (!ret && (out1 > 0 || out2 > tickData->tickRate * 1000)) {
+
+        effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_TICK, owner, eff);
+
+        tickData->worldTimerBig = hr;
+        tickData->worldTimerLittle = sec;
+    }
+}
 
 static CNWSObject *currentObject;
 static unsigned int currentWorldTimer1,
@@ -8,7 +48,6 @@ static unsigned int currentWorldTimer1,
 
 static CNWSObject* (*CNWSObject__UpdateEffectList)(CNWSObject *obj,
         unsigned int a2, unsigned int a3);
-
 
 static CNWSObject* Hook_CNWSObject__UpdateEffectList(CNWSObject *obj,
         unsigned int a2, unsigned int a3)
@@ -22,47 +61,15 @@ static CNWSObject* Hook_CNWSObject__UpdateEffectList(CNWSObject *obj,
 
 static CGameEffect** CExoArrayList_Eff__vc_Mid(CExoArrayList<CGameEffect*> *list, int idx)
 {
-    CGameEffect *e = list->Array[idx];
+    CGameEffect *eff = list->Array[idx];
 
-    if (e->Type == EFFECT_TRUETYPE_MODIFYNUMATTACKS && e->GetInteger(0) == 0) {
-        CWorldTimer *wt = g_pAppManager->
-                          ServerExoApp->
-                          GetActiveTimer(currentObject->ObjectID);
+    if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
+        AttachedEffectData *tickData = effects.GetAttachedEffectData(eff->Id);
 
-        unsigned int desiredTickInterval = e->GetInteger(1);
-
-        if (desiredTickInterval > 0) {
-            int lastWorldTimer1 = e->GetInteger(2);
-            if (lastWorldTimer1 == 0) {
-                lastWorldTimer1 = currentWorldTimer1;
-                e->SetInteger(2, currentWorldTimer1);
-            }
-            int lastWorldTimer2 = e->GetInteger(3);
-            if (lastWorldTimer2 == 0) {
-                lastWorldTimer2 = currentWorldTimer2;
-                e->SetInteger(3, currentWorldTimer2);
-            }
-
-            long unsigned int out1, out2;
-            int ret = wt->SubtractWorldTimes(currentWorldTimer1, currentWorldTimer2,
-                                             lastWorldTimer1, lastWorldTimer2, &out1, &out2);
-
-            if (!ret && (out1 > 0 || out2 > desiredTickInterval * 1000)) {
-                effects.currentEffect = e;
-
-                CoreRunScriptService sv = {
-                    currentObject->ObjectID,
-                    "on_ceff_tick",
-                    0
-                };
-                CallService(SERVICE_CORE_RUNSCRIPT, (uintptr_t) &sv);
-
-                effects.currentEffect = NULL;
-
-                e->SetInteger(2, currentWorldTimer1);
-                e->SetInteger(3, currentWorldTimer2);
-            }
-        }
+        if (tickData != NULL && tickData->tickRate > 0)
+            TickEffect(currentObject, eff,
+                       tickData,
+                       currentWorldTimer1, currentWorldTimer2);
     }
 
     return &list->Array[idx];

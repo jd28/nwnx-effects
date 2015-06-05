@@ -4,7 +4,8 @@ add_module(effects plugin-effects
 	../../api/all ../../api/nwnsyms.S
 
 	NWNXEffects
-    hooks/h_ModifyNumAttacks
+	hooks/h_EffectHandlers
+	hooks/h_GetScriptEffectType
     hooks/h_UpdateEffectList
 )
 

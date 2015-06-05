@@ -1,26 +1,35 @@
 /**
- * Creates a custom effect.
+ * Creates a custom effect. This requires nwnx_structs.
  *
- * +tickInterval+ is a value in seconds how often a script will be called,
- * as long as the effect is still applied and active. A interval of 0
- * specifies that this effect should not tick.
+ * +truetype+ is a number meant to reflect further types beyond
+ * EFFECT_TRUETYPE_DEFENSIVESTANCE (truetype > 95).
  *
- * All other parameters are opaque and can be used by you as you see fit;
- * they can be retrieved or set with Get/SetCustomEffectInteger(idx) to
- * store state between calls.
+ * To actually define what your custom effect does, use nwnx_structs
+ * as usual to set it's integers. It is recommended to write your own
+ * EffectX() constructors.
  *
- * One of those integers should probably be a differentiator between your
- * custom effect types.
+ * Your truetype effect IDs are mapped 1:1 to script IDs, so you can check for
+ * them with the usual suspects (GetHasEffect etc).
  *
- * Please note that the integer list is managed by nwnx_effects; if you want
- * to mess with it (for example, through nwnx_structs), see the
- * README.md paragraph "Internals" first.
+ * Please see README.md for detailed usage instructions.
  */
-effect EffectCustom(int tickInterval = 0,
-					int arg0 = 0, int arg1 = 0,
-					int arg2 = 0, int arg3 = 0,
-					int arg4 = 0, int arg5 = 0,
-					int arg6 = 0. int arg7 = 0);
+effect EffectCustom(int truetype);
+
+/**
+ * Sets the native effect of EFFECT_TRUETYPE_x to trigger callbacks.
+ *
+ * This can be used to augment existing effect types.
+ *
+ * Best called in OnModuleLoad or similar.
+ */
+void SetNativeEffectCallsUs(int truetype);
+
+/**
+ * Returns the custom effect's truetype.
+ *
+ * This will only work inside nwnx_effect callback scripts. Returns -1 on error.
+ */
+int GetCustomEffectTrueType();
 
 /**
  * Returns the custom effect's tickrate (>= 0).
@@ -37,7 +46,7 @@ int GetCustomEffectTickRate();
 void SetCustomEffectTickRate(int value);
 
 /**
- * Gets any of the custom parameters given to EffectCustom (arg0..arg6).
+ * Gets any of the custom parameters given to EffectCustom (arg0..argN).
  *
  * This will only work inside nwnx_effect callback scripts.
  *
@@ -46,7 +55,7 @@ void SetCustomEffectTickRate(int value);
 int GetCustomEffectInteger(int index);
 
 /**
- * Sets any of the custom parameters given to EffectCustom (arg0..arg6).
+ * Sets any of the custom parameters given to EffectCustom (arg0..argN).
  *
  * This will only work inside nwnx_effect callback scripts.
  */
@@ -67,66 +76,63 @@ void SetCustomEffectFailed();
 object GetCustomEffectCreator();
 
 
+int GetCustomEffectTrueType()
+{
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTRUETYPE", " ");
+    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTRUETYPE"));
+}
+
 int GetCustomEffectTickRate()
 {
-	SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTICKRATE", " ");
-	return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTICKRATE"));
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTICKRATE", " ");
+    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTICKRATE"));
+}
+
+void SetNativeEffectCallsUs(int truetype)
+{
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!SETNATIVEHANDLED", IntToString(truetype) + " ");
 }
 
 void SetCustomEffectTickRate(int value)
 {
-	SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTICKRATE", IntToString(value) + " ");
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTICKRATE", IntToString(value) + " ");
 }
 
 int GetCustomEffectInteger(int index)
 {
-	SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETPARAM", IntToString(index) + " ");
-	return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETPARAM"));
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETINT", IntToString(index) + " ");
+    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETINT"));
 }
 
 void SetCustomEffectInteger(int index, int value)
 {
-	SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!SETPARAM",
-				   IntToString(index) + "~" + IntToString(value));
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!SETNT",
+                   IntToString(index) + "~" + IntToString(value));
 }
 
 void SetCustomEffectFailed()
 {
-	SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!SETFAILED", "1");
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!SETFAILED", "1");
 }
 
 object GetCustomEffectCreator()
 {
-	return GetLocalObject(OBJECT_SELF, "NWNX!EFFECTS!GETCREATOR");
+    return GetLocalObject(OBJECT_SELF, "NWNX!EFFECTS!GETCREATOR");
 }
 
-effect EffectCustom(int tickInterval = 0,
-					int arg0 = 0, int arg1 = 0,
-					int arg2 = 0, int arg3 = 0,
-					int arg4 = 0, int arg5 = 0,
-					int arg6 = 0, int arg7 = 0)
+effect EffectCustom(int truetype)
 {
-	effect ret = EffectModifyAttacks(0);
+    effect ret;
 
-	if (tickInterval > 0) SetEffectInteger(ret, 1, tickInterval);
+    if (truetype >= 96) {
+    	// We're using effectModifyAttacks as a template because it only uses
+    	// one int param.
+        ret = EffectModifyAttacks(0);
+    	// We immediately set a custom truetype, so it never registers as such
+    	// with nwserver. You're free to use all local CGameEffect
+    	// ints/floats/object/strings for your own nefarious purposes.
+        SetEffectTrueType(ret, truetype);
+    }
 
-	// SetEffectInteger(ret, 1, 0); // worldTimerHours
-	// SetEffectInteger(ret, 2, 0); // worldTimerSEconds
-	if (arg0 != 0) SetEffectInteger(ret, 4, arg0);
-
-	if (arg1 != 0) SetEffectInteger(ret, 5, arg1);
-
-	if (arg2 != 0) SetEffectInteger(ret, 6, arg2);
-
-	if (arg3 != 0) SetEffectInteger(ret, 7, arg3);
-
-	if (arg4 != 0) SetEffectInteger(ret, 8, arg4);
-
-	if (arg5 != 0) SetEffectInteger(ret, 9, arg5);
-
-	if (arg6 != 0) SetEffectInteger(ret, 10, arg6);
-
-	if (arg7 != 0) SetEffectInteger(ret, 11, arg7);
-
-	return ret;
+    return ret;
 }

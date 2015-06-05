@@ -4,17 +4,13 @@ nwnx_effects allows implementing custom effect types that behave just like
 the bioware natives. You get callbacks for OnApply, OnRemove, and you can
 specify a interval which calls into a script; much like object heartbeats.
 
+Additionally, nwnx_effects allows specifying the same callbacks for native
+effect types, with the caveat that you cannot prevent them from applying.
 
 ### Caveat
 
-Custom effects misuse the native EffectModifyAttacks() constructor. Any scripts
-using that effect type will break. You will have to rewrite your scripts BEFORE
-implementing nwnx_effects.
-
-### Caveat 2
-
-nwnx_effects depends on nwnx_structs (specifcally, `SetEffectInteger(...)`).
-
+nwnx_effects depends on nwnx_structs to set up new effects initially. See
+the include in nwn/ for details.
 
 ## Setup
 
@@ -34,18 +30,16 @@ those scripts.
 
 ### 1) Creation
 
-    int tickRate = 5;
-    effect v = EffectCustom(tickRate, 1, 2, 3);
+    const int EFFECT_TRUETYPE_MY_FUNKY_EFFECT = 100;
+    effect v = EffectCustom(EFFECT_TRUETYPE_MY_FUNKY_EFFECT);
 
-is used to create a new effect.
+is used to create a new effect. You need to use IDs larger than the
+latest one provided by bioware (EFFECT_TRUETYPE_DEFENSIVESTANCE = 95).
 
-`tickRate` is a positive integer describing the interval in which the effect
-"heartbeat" will trigger. The value is in seconds.
+All IDs larger than that are assumed to be custom effects.
 
-Any following parameters are completely opaque to nwnx_effects and can be put
-to use by you as you see fit; however it is good practice to use the first parameter
-as a "custom effect type" flag to differentiate between your implemented effects.
-
+You should use local integers, strings, objects and floats (as per nwnx_structs)
+to define behaviour or to keep state for your new effect.
 
 ### 2) ApplyEffectToObject
 
@@ -55,13 +49,20 @@ Once you apply your effect to a object, `on_ceff_apply` runs.
 `effect` type (since nwscript would always duplicate it on the stack, losing your
 modifications) - instead, there are custom helper functions to manage state.
 
-For example, to get your custom parameters, you can use `GetCustomEffectInteger(1)`;
-in our example this would be 1. All parameters not specified at creation default
-to 0.
+For example, to get your custom parameters, you can use `GetCustomEffectInteger(0)`
+to retrieve the first int.
+All parameters not specified at creation default to 0.
 
 You can stop a effect from applying by calling `SetCustomEffectFailed()`. This
 will only work inside the apply callback.
 
+You can make your effect have a tick rate - that is, a heartbeat that is called
+every n seconds, by using `SetCustomEffectTickRate(5);`.
+
+Please keep in mind that this heartbeat script is called for every effect.
+While the handler is fairly fast, it it still subject to reality.
+If you apply a thousand effects like this with a tickrate of one second, it will
+bog down your server.
 
 ### 3) Tick tock, tick tock
 
@@ -71,8 +72,8 @@ after 5 seconds.
 
 Effects where tickrate is 0 will never trigger this script.
 
-Tip: You can adjust the tickrate at runtime with `Get/SetCustomEffectTickRate()`.
-
+Tip: You can adjust the tickrate at runtime with `Get/SetCustomEffectTickRate()`,
+but only inside nwnx_effects handler scripts.
 
 ### 3) Remove
 
@@ -82,17 +83,5 @@ or simply expiring, `on_ceff_remove` is called.
 
 ## Internals
 
-nwnx_effects uses some effect integers to keep track of needed state. As such,
-the first four integer values are **reserved**. Custom parameters as passed in
-to `EffectCustom()` start at index 4.
-
-### CGameEffect->IntList
-
-* `0`: Always "0" for custom effects; 1 or larger is legacy ModifyAttacks behaviour.
-* `1`: tickrate in seconds
-* `2`: last tick world timer hours
-* `3`: last tick world timer seconds
-* `4` through `12`: user-supplied parameters
-
-To expand on the available user-supplied parameters and account for the reserved
-values, nwnx_effects raises the default integer list size to 12 (from 8).
+nwnx_effects does not touch effect internal state. All fields are available for
+your own use.
