@@ -21,14 +21,12 @@ static int CServerAIMaster__OnEffectApplied_Hook(CServerAIMaster *ai, CNWSObject
     // One of our custom effects: Always call our own handler.
     if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
         int ret = effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_APPLY, obj, eff);
-        if (ret) effects.CleanupEffect(eff->Id);
         return ret;
     }
 
     // Otherwise: a default bioware effect.
     int ret = CServerAIMaster__OnEffectApplied(ai, obj, eff, a4);
     if (ret) {
-        effects.CleanupEffect(eff->Id);
         return ret;
     }
 
@@ -47,7 +45,6 @@ static int CServerAIMaster__OnEffectRemoved_Hook(CServerAIMaster *ai, CNWSObject
 {
     if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
         effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_REMOVE, obj, eff);
-        effects.CleanupEffect(eff->Id);
         return 1;
     }
 
@@ -60,7 +57,6 @@ static int CServerAIMaster__OnEffectRemoved_Hook(CServerAIMaster *ai, CNWSObject
 
     int ret = CServerAIMaster__OnEffectRemoved(ai, obj, eff);
 
-    effects.CleanupEffect(eff->Id);
     return ret;
 }
 

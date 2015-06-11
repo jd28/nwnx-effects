@@ -6,6 +6,8 @@
 #include "../../include/nx_hook.h"
 #include "pluginlink.h"
 #include "core/pluginlink.h"
+
+#include <assert.h>
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
@@ -26,31 +28,28 @@
 #define CUSTOM_EFFECT_SCRIPT_TICK     "on_ceff_tick"
 #define CUSTOM_EFFECT_SCRIPT_REMOVE   "on_ceff_remove"
 
-#define CUSTOM_EFFECT_PROPERTIES_START_AT 0
 
 void HookCustomEffectUpdate();
 void HookGetScriptEffectType();
 void HookEffectHandlers();
 void HookExecuteCommandApplyEffectOnObject();
+void HookEffectSetNumIntegers();
 
-/**
- * A struct that describes attached data to effects. It's used to carry
- * metadata around instead of using native Integers, so we don't clobber
- * existing ints in native CGameEffects.
- *
- * Lifetime is restricted to the Apply/Remove cycle, under the assumption that
- * all effects will be removed at some point.
- */
-struct AttachedEffectData {
-	// Effect tick rate in seconds.
-    uint32_t tickRate;
+#define EFFECT_MIN_INTEGERS        23
 
-    // Used internally to keep track of when the last tick happened.
-    uint32_t worldTimerBig;
-    uint32_t worldTimerLittle;
-};
+#define EFFECT_INT_TICKRATE        20
+#define EFFECT_INT_WORLTIMER_DAY   21
+#define EFFECT_INT_WORLDTIMER_TIME 22
 
-typedef uint32_t nweffectid;
+#define GetEffectTickRate(e)       (e->IntList[EFFECT_INT_TICKRATE])
+#define GetEffectLastTickDay(e)    (e->IntList[EFFECT_INT_WORLTIMER_DAY])
+#define GetEffectLastTickTime(e)   (e->IntList[EFFECT_INT_WORLDTIMER_TIME])
+
+#define SetEffectTickRate(e,v)     (e->IntList[EFFECT_INT_TICKRATE] = v)
+#define SetEffectLastTickDay(e,v)  (e->IntList[EFFECT_INT_WORLTIMER_DAY] = v)
+#define SetEffectLastTickTime(e,v) (e->IntList[EFFECT_INT_WORLDTIMER_TIME] = v)
+
+typedef long unsigned int nweffectid;
 
 class CNWNXEffects: public CNWNXBase
 {
@@ -63,28 +62,24 @@ public:
 
     HANDLE hCustomApply, hCustomRemove;
 
-    bool CallEffectHandler(const char* handler, CNWSObject* obj, CGameEffect *eff);
+    int CallEffectHandler(const char* handler, CNWSObject* obj, CGameEffect *eff);
 
-    /**
-     * This removes any local state about the given effect.
-     */
-    void CleanupEffect(nweffectid id);
-
-    /**
-     * Returns the AttachedEffectData associated with the given effect, or NULL if
-     * none has been assigned.
-     */
-    AttachedEffectData *GetAttachedEffectData(nweffectid id);
 
     /**
      * Built-in effect truetypes that trigger a additional on-apply/remove.
      */
     std::vector<uint16_t> NativeEffectsWithHandlers;
 
+    /**
+     * Itemproperty types that trigger a on-apply/remove event.
+     */
+    std::vector<uint16_t> ItemPropertiesWithHandlers;
+
+    bool nextItemPropertyOurs = false;
+    CNWSItem *currentItem;
+    CNWItemProperty_s *currentItemProperty;
 
 private:
     CGameEffect *currentEffect;
-    bool currentResult;
-
-    std::unordered_map<nweffectid, AttachedEffectData*> EffectsAttachedEffectData;
+    int currentResult;
 };

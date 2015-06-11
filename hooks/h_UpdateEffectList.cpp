@@ -9,42 +9,41 @@
 extern CNWNXEffects effects;
 
 static void TickEffect(CNWSObject* owner, CGameEffect *eff,
-                       AttachedEffectData *tickData,
-                       unsigned int hr, unsigned int sec)
+                       unsigned int day, unsigned int time)
 {
-    // No tickdata set or no ticks requested.
-    if (!tickData || tickData->tickRate <= 0)
-        return;
+    int32_t tickRate = GetEffectTickRate(eff);
 
-    printf("tickData: %d\n", tickData->tickRate);
+    // No tickdata set or no ticks requested.
+    if (tickRate <= 0)
+        return;
 
     CWorldTimer *wt = g_pAppManager->
                       ServerExoApp->
                       GetActiveTimer(owner->ObjectID);
 
-    if (tickData->worldTimerBig == 0)
-        tickData->worldTimerBig = hr;
-    if (tickData->worldTimerLittle == 0)
-        tickData->worldTimerLittle = sec;
+    if (GetEffectLastTickDay(eff) == 0)
+        SetEffectLastTickDay(eff, day);
+    if (GetEffectLastTickTime(eff) == 0)
+        SetEffectLastTickTime(eff, time);
 
     long unsigned int out1, out2;
     int ret = wt->SubtractWorldTimes(
-                  hr, sec,
-                  tickData->worldTimerBig, tickData->worldTimerLittle,
+                  day, time,
+                  GetEffectLastTickDay(eff), GetEffectLastTickTime(eff),
                   &out1, &out2);
 
-    if (!ret && (out1 > 0 || out2 > tickData->tickRate * 1000)) {
+    if (!ret && (out1 > 0 || out2 > (uint32_t)(tickRate * 1000))) {
 
         effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_TICK, owner, eff);
 
-        tickData->worldTimerBig = hr;
-        tickData->worldTimerLittle = sec;
+        SetEffectLastTickDay(eff, day);
+        SetEffectLastTickTime(eff, time);
     }
 }
 
 static CNWSObject *currentObject;
-static unsigned int currentWorldTimer1,
-       currentWorldTimer2;
+static unsigned int currentWorldTimerDay,
+       currentWorldTimerTime;
 
 static CNWSObject* (*CNWSObject__UpdateEffectList)(CNWSObject *obj,
         unsigned int a2, unsigned int a3);
@@ -53,8 +52,8 @@ static CNWSObject* Hook_CNWSObject__UpdateEffectList(CNWSObject *obj,
         unsigned int a2, unsigned int a3)
 {
     currentObject = obj;
-    currentWorldTimer1 = a2;
-    currentWorldTimer2 = a3;
+    currentWorldTimerDay = a2;
+    currentWorldTimerTime = a3;
 
     return CNWSObject__UpdateEffectList(obj, a2, a3);
 }
@@ -63,14 +62,9 @@ static CGameEffect** CExoArrayList_Eff__vc_Mid(CExoArrayList<CGameEffect*> *list
 {
     CGameEffect *eff = list->Array[idx];
 
-    if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
-        AttachedEffectData *tickData = effects.GetAttachedEffectData(eff->Id);
-
-        if (tickData != NULL && tickData->tickRate > 0)
-            TickEffect(currentObject, eff,
-                       tickData,
-                       currentWorldTimer1, currentWorldTimer2);
-    }
+    if (GetEffectTickRate(eff) > 0)
+        TickEffect(currentObject, eff,
+                   currentWorldTimerDay, currentWorldTimerTime);
 
     return &list->Array[idx];
 }

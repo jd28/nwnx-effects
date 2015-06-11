@@ -41,6 +41,8 @@ All IDs larger than that are assumed to be custom effects.
 You should use local integers, strings, objects and floats (as per nwnx_structs)
 to define behaviour or to keep state for your new effect.
 
+Please note that effect integer >= 20 are RESERVED for nwnx_effects usage.
+
 ### 2) ApplyEffectToObject
 
 Once you apply your effect to a object, `on_ceff_apply` runs.
@@ -83,5 +85,4 @@ or simply expiring, `on_ceff_remove` is called.
 
 ## Internals
 
-nwnx_effects does not touch effect internal state. All fields are available for
-your own use.
+Effect integer >= 20 are RESERVED for nwnx_effects usage.

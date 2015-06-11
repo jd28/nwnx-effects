@@ -2,6 +2,7 @@ include_directories(.)
 
 add_module(effects plugin-effects
 	NWNXEffects
+	hooks/h_SetNumIntegers
 	hooks/h_EffectHandlers
 	hooks/h_GetScriptEffectType
     hooks/h_UpdateEffectList

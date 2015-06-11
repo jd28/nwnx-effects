@@ -84,8 +84,7 @@ int GetCustomEffectTrueType()
 
 int GetCustomEffectTickRate()
 {
-    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTICKRATE", " ");
-    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTICKRATE"));
+    return GetCustomEffectInteger(20);
 }
 
 void SetNativeEffectCallsUs(int truetype)
@@ -95,7 +94,7 @@ void SetNativeEffectCallsUs(int truetype)
 
 void SetCustomEffectTickRate(int value)
 {
-    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETTICKRATE", IntToString(value) + " ");
+    SetCustomEffectInteger(20, value);
 }
 
 int GetCustomEffectInteger(int index)
@@ -125,12 +124,12 @@ effect EffectCustom(int truetype)
     effect ret;
 
     if (truetype >= 96) {
-    	// We're using effectModifyAttacks as a template because it only uses
-    	// one int param.
+        // We're using effectModifyAttacks as a template because it only uses
+        // one int param.
         ret = EffectModifyAttacks(0);
-    	// We immediately set a custom truetype, so it never registers as such
-    	// with nwserver. You're free to use all local CGameEffect
-    	// ints/floats/object/strings for your own nefarious purposes.
+        // We immediately set a custom truetype, so it never registers as such
+        // with nwserver. You're free to use all local CGameEffect
+        // ints/floats/object/strings for your own nefarious purposes.
         SetEffectTrueType(ret, truetype);
     }
 
