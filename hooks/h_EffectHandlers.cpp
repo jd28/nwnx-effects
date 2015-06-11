@@ -60,10 +60,10 @@ static int CServerAIMaster__OnEffectRemoved_Hook(CServerAIMaster *ai, CNWSObject
         // We cant abort here, always call bioware-supplied effect removal.
         effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_REMOVE, obj, eff);
 
-    CServerAIMaster__OnEffectRemoved(ai, obj, eff);
+    int ret = CServerAIMaster__OnEffectRemoved(ai, obj, eff);
 
     effects.CleanupEffect(eff->Id);
-    return 1;
+    return ret;
 }
 
 void HookEffectHandlers()
