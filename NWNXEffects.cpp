@@ -45,10 +45,13 @@ char *CNWNXEffects::OnRequest(char *gameObject, char *Request, char *Parameters)
 {
     Log(1, "Request: \"%s\"\nParams: \"%s\"\n", Request, Parameters);
 
-    if (strcmp("SETNATIVEHANDLED", Request) == 0) {
+    if (strcmp("SETEFFECTNATIVEHANDLED", Request) == 0) {
         uint32_t ret = atoi(Parameters);
         if (ret > 0)
-            EffectsWithEffectHandlers.push_back(ret);
+            NativeEffectsWithHandlers.push_back(ret);
+
+        return NULL;
+    }
 
         return NULL;
     }

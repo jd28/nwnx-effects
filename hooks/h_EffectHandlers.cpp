@@ -5,7 +5,7 @@
  *
  * We're using it to call back into nwscript for any effects that
  * should have user events - like custom effects, or effects we
- * explicitly enable it for (CNWXEffects::EffectsWithEffectHandlers).
+ * explicitly enable it for (CNWXEffects::NativeEffectsWithHandlers).
  */
 
 extern CNWNXEffects effects;
@@ -34,10 +34,9 @@ static int CServerAIMaster__OnEffectApplied_Hook(CServerAIMaster *ai, CNWSObject
 
     // Default effects canno be stopped from applying for stability reasons,
     // but we will still call our custom effect handler if the user wishes us to.
-    if (std::find(effects.EffectsWithEffectHandlers.begin(),
-                  effects.EffectsWithEffectHandlers.end(), eff->Type) !=
-            effects.EffectsWithEffectHandlers.end())
-        // Handler says to abort.
+    if (std::find(effects.NativeEffectsWithHandlers.begin(),
+                  effects.NativeEffectsWithHandlers.end(), eff->Type) !=
+            effects.NativeEffectsWithHandlers.end())
         effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_APPLY, obj, eff);
 
     return 0;
@@ -54,10 +53,9 @@ static int CServerAIMaster__OnEffectRemoved_Hook(CServerAIMaster *ai, CNWSObject
 
     // Otherwise: a default bioware effect. See if the user indicated
     // he wants to have his handler tickled.
-    if (std::find(effects.EffectsWithEffectHandlers.begin(),
-                  effects.EffectsWithEffectHandlers.end(), eff->Type) !=
-            effects.EffectsWithEffectHandlers.end())
-        // We cant abort here, always call bioware-supplied effect removal.
+    if (std::find(effects.NativeEffectsWithHandlers.begin(),
+                  effects.NativeEffectsWithHandlers.end(), eff->Type) !=
+            effects.NativeEffectsWithHandlers.end())
         effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_REMOVE, obj, eff);
 
     int ret = CServerAIMaster__OnEffectRemoved(ai, obj, eff);

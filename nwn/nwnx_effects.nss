@@ -90,7 +90,7 @@ int GetCustomEffectTickRate()
 
 void SetNativeEffectCallsUs(int truetype)
 {
-    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!SETNATIVEHANDLED", IntToString(truetype) + " ");
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!SETEFFECTNATIVEHANDLED", IntToString(truetype) + " ");
 }
 
 void SetCustomEffectTickRate(int value)
@@ -106,7 +106,7 @@ int GetCustomEffectInteger(int index)
 
 void SetCustomEffectInteger(int index, int value)
 {
-    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!SETNT",
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!SETINT",
                    IntToString(index) + "~" + IntToString(value));
 }
 

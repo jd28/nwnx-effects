@@ -26,11 +26,6 @@
 #define CUSTOM_EFFECT_SCRIPT_TICK     "on_ceff_tick"
 #define CUSTOM_EFFECT_SCRIPT_REMOVE   "on_ceff_remove"
 
-/**
- * Internal layout of ModifyNumAttacks has required fields at the front.
- * User-accessible props start at X - see README.md "Internals".
- * Don't change this. :)
- */
 #define CUSTOM_EFFECT_PROPERTIES_START_AT 0
 
 void HookCustomEffectUpdate();
@@ -84,7 +79,8 @@ public:
     /**
      * Built-in effect truetypes that trigger a additional on-apply/remove.
      */
-    std::vector<uint32_t> EffectsWithEffectHandlers;
+    std::vector<uint16_t> NativeEffectsWithHandlers;
+
 
 private:
     CGameEffect *currentEffect;
