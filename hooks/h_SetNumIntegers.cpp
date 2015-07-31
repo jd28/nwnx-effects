@@ -12,16 +12,12 @@ static void (*SetNumIntegers)(CGameEffect*, int);
 
 static void SetNumIntegersInitializeToNegativeOne_Hook(CGameEffect* e, int count)
 {
-	assert(count <= 20);
-
 	return SetNumIntegersInitializeToNegativeOne(
                e, count >= EFFECT_MIN_INTEGERS ? count : EFFECT_MIN_INTEGERS);
 }
 
 static void SetNumIntegers_Hook(CGameEffect* e, int count)
 {
-	assert(count <= 20);
-
     return SetNumIntegers(
                e, count >= EFFECT_MIN_INTEGERS ? count : EFFECT_MIN_INTEGERS);
 }
