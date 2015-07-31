@@ -11,60 +11,62 @@
 extern CNWNXEffects effects;
 
 static int (*CServerAIMaster__OnEffectApplied)(CServerAIMaster *ai, CNWSObject *obj,
-        CGameEffect *eff, int a4);
+		CGameEffect *eff, int a4);
 static int (*CServerAIMaster__OnEffectRemoved)(CServerAIMaster *ai, CNWSObject *obj,
-        CGameEffect *eff);
+		CGameEffect *eff);
 
 static int CServerAIMaster__OnEffectApplied_Hook(CServerAIMaster *ai, CNWSObject *obj,
-        CGameEffect *eff, int a4)
+		CGameEffect *eff, int a4)
+
 {
-    // One of our custom effects: Always call our own handler.
-    if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
-        int ret = effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_APPLY, obj, eff);
-        return ret;
-    }
+	// One of our custom effects: Always call our own handler.
+	if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
+		int ret = effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_APPLY, obj, eff);
+		return ret;
+	}
 
-    // Otherwise: a default bioware effect.
-    int ret = CServerAIMaster__OnEffectApplied(ai, obj, eff, a4);
-    if (ret) {
-        return ret;
-    }
+	// Otherwise: a default bioware effect.
+	int ret = CServerAIMaster__OnEffectApplied(ai, obj, eff, a4);
 
-    // Default effects canno be stopped from applying for stability reasons,
-    // but we will still call our custom effect handler if the user wishes us to.
-    if (std::find(effects.NativeEffectsWithHandlers.begin(),
-                  effects.NativeEffectsWithHandlers.end(), eff->Type) !=
-            effects.NativeEffectsWithHandlers.end())
-        effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_APPLY, obj, eff);
+	if (ret) {
+		return ret;
+	}
 
-    return 0;
+	// Default effects canno be stopped from applying for stability reasons,
+	// but we will still call our custom effect handler if the user wishes us to.
+	if (std::find(effects.NativeEffectsWithHandlers.begin(),
+				  effects.NativeEffectsWithHandlers.end(), eff->Type) !=
+			effects.NativeEffectsWithHandlers.end())
+		effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_APPLY, obj, eff);
+
+	return 0;
 }
 
 static int CServerAIMaster__OnEffectRemoved_Hook(CServerAIMaster *ai, CNWSObject *obj,
-        CGameEffect *eff)
+		CGameEffect *eff)
 {
-    if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
-        effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_REMOVE, obj, eff);
-        return 1;
-    }
+	if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
+		int ret = effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_REMOVE, obj, eff);
+		return 1;
+	}
 
-    // Otherwise: a default bioware effect. See if the user indicated
-    // he wants to have his handler tickled.
-    if (std::find(effects.NativeEffectsWithHandlers.begin(),
-                  effects.NativeEffectsWithHandlers.end(), eff->Type) !=
-            effects.NativeEffectsWithHandlers.end())
-        effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_REMOVE, obj, eff);
+	// Otherwise: a default bioware effect. See if the user indicated
+	// he wants to have his handler tickled.
+	if (std::find(effects.NativeEffectsWithHandlers.begin(),
+				  effects.NativeEffectsWithHandlers.end(), eff->Type) !=
+			effects.NativeEffectsWithHandlers.end())
+		effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_REMOVE, obj, eff);
 
-    int ret = CServerAIMaster__OnEffectRemoved(ai, obj, eff);
+	int ret = CServerAIMaster__OnEffectRemoved(ai, obj, eff);
 
-    return ret;
+	return ret;
 }
 
 void HookEffectHandlers()
 {
-    NX_HOOK(CServerAIMaster__OnEffectApplied, 0x080984E4,
-            CServerAIMaster__OnEffectApplied_Hook, 6);
+	NX_HOOK(CServerAIMaster__OnEffectApplied, 0x080984E4,
+			CServerAIMaster__OnEffectApplied_Hook, 6);
 
-    NX_HOOK(CServerAIMaster__OnEffectRemoved, 0x08098508,
-            CServerAIMaster__OnEffectRemoved_Hook, 6);
+	NX_HOOK(CServerAIMaster__OnEffectRemoved, 0x08098508,
+			CServerAIMaster__OnEffectRemoved_Hook, 6);
 }

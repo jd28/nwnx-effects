@@ -46,7 +46,7 @@ int GetCustomEffectTickRate();
 void SetCustomEffectTickRate(int value);
 
 /**
- * Gets any of the custom parameters given to EffectCustom (arg0..argN).
+ * Gets any of the custom parameters given to EffectCustom (arg0..19).
  *
  * This will only work inside nwnx_effect callback scripts.
  *
@@ -55,7 +55,7 @@ void SetCustomEffectTickRate(int value);
 int GetCustomEffectInteger(int index);
 
 /**
- * Sets any of the custom parameters given to EffectCustom (arg0..argN).
+ * Sets any of the custom parameters given to EffectCustom (arg0..19).
  *
  * This will only work inside nwnx_effect callback scripts.
  */

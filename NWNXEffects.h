@@ -54,32 +54,23 @@ typedef long unsigned int nweffectid;
 class CNWNXEffects: public CNWNXBase
 {
 public:
-    CNWNXEffects();
+	CNWNXEffects();
 
-    bool OnCreate(gline *nwnxConfig, const char *LogDir = NULL);
-    char *OnRequest(char *gameObject, char *Request, char *Parameters);
-    unsigned long OnRequestObject(char *gameObject, char *Request);
+	bool OnCreate(gline *nwnxConfig, const char *LogDir = NULL);
+	char *OnRequest(char *gameObject, char *Request, char *Parameters);
+	unsigned long OnRequestObject(char *gameObject, char *Request);
 
-    HANDLE hCustomApply, hCustomRemove;
+	HANDLE hCustomApply, hCustomRemove;
 
-    int CallEffectHandler(const char* handler, CNWSObject* obj, CGameEffect *eff);
+	int CallEffectHandler(const char* handler, CNWSObject* obj, CGameEffect *eff);
 
 
-    /**
-     * Built-in effect truetypes that trigger a additional on-apply/remove.
-     */
-    std::vector<uint16_t> NativeEffectsWithHandlers;
-
-    /**
-     * Itemproperty types that trigger a on-apply/remove event.
-     */
-    std::vector<uint16_t> ItemPropertiesWithHandlers;
-
-    bool nextItemPropertyOurs = false;
-    CNWSItem *currentItem;
-    CNWItemProperty_s *currentItemProperty;
+	/**
+	 * Built-in effect truetypes that trigger a additional on-apply/remove.
+	 */
+	std::vector<uint16_t> NativeEffectsWithHandlers;
 
 private:
-    CGameEffect *currentEffect;
-    int currentResult;
+	CGameEffect *currentEffect;
+	int currentResult;
 };

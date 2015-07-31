@@ -6,14 +6,14 @@
  */
 #define EVENT_EFFECTS_CUSTOM_APPLY "Effects/Custom/Apply"
 
-typedef struct {
+struct EffectsCustomApplyEvent {
 	/* The object on which the effect is applied/removed. */
-    CNWSObject  *object;
-    /* The effect itself. */
-    CGameEffect *effect;
-    /* Return true here if the effect cant be applied; this deletes it. */
-    bool         failed;
-} EffectsCustomApplyEvent;
+	CNWSObject  *object;
+	/* The effect itself. */
+	CGameEffect *effect;
+	/* Return true here if the effect cant be applied; this deletes it. */
+	bool         failed;
+};
 
 /**
  * Event: EVENT_EFFECTS_CUSTOM_REMOVE
@@ -21,9 +21,9 @@ typedef struct {
  */
 #define EVENT_EFFECTS_CUSTOM_REMOVE "Effects/Custom/Remove"
 
-typedef struct {
+struct EffectsCustomRemoveEvent {
 	/* The object on which the effect is applied/removed. */
-    CNWSObject  *object;
-    /* The effect itself. */
-    CGameEffect *effect;
-} EffectsCustomRemoveEvent;
+	CNWSObject  *object;
+	/* The effect itself. */
+	CGameEffect *effect;
+};
