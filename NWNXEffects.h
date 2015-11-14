@@ -71,6 +71,7 @@ public:
 
     HANDLE hCustom;
     HANDLE hItemprop;
+    int32_t forceApply = 0;
 
     int CallEffectHandler(CNWSObject* obj, CGameEffect *eff, CustomEffect type);
     bool ItempropEvent(CNWSCreature *obj, CNWSItem *item, CNWItemProperty *ip, bool removal, uint32_t slot);
