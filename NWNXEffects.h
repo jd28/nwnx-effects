@@ -54,21 +54,20 @@ typedef long unsigned int nweffectid;
 class CNWNXEffects: public CNWNXBase
 {
 public:
-	CNWNXEffects();
+    CNWNXEffects();
 
-	bool OnCreate(gline *nwnxConfig, const char *LogDir = NULL);
-	char *OnRequest(char *gameObject, char *Request, char *Parameters);
-	unsigned long OnRequestObject(char *gameObject, char *Request);
-
+    bool OnCreate(gline *nwnxConfig, const char *LogDir = NULL);
+    char *OnRequest(char *gameObject, char *Request, char *Parameters);
+    unsigned long OnRequestObject(char *gameObject, char *Request);
 	HANDLE hCustomApply, hCustomRemove;
 
 	int CallEffectHandler(const char* handler, CNWSObject* obj, CGameEffect *eff);
 
 
-	/**
-	 * Built-in effect truetypes that trigger a additional on-apply/remove.
-	 */
-	std::vector<uint16_t> NativeEffectsWithHandlers;
+    /**
+     * Built-in effect truetypes that trigger a additional on-apply/remove.
+     */
+    std::vector<uint16_t> NativeEffectsWithHandlers;
 
 private:
 	CGameEffect *currentEffect;

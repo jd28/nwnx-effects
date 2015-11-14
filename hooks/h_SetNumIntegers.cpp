@@ -12,7 +12,7 @@ static void (*SetNumIntegers)(CGameEffect*, int);
 
 static void SetNumIntegersInitializeToNegativeOne_Hook(CGameEffect* e, int count)
 {
-	return SetNumIntegersInitializeToNegativeOne(
+    return SetNumIntegersInitializeToNegativeOne(
                e, count >= EFFECT_MIN_INTEGERS ? count : EFFECT_MIN_INTEGERS);
 }
 

@@ -4,7 +4,7 @@ extern PLUGINLINK *pluginLink;
 
 CNWNXEffects::CNWNXEffects()
 {
-	confKey = strdup("EFFECTS");
+    confKey = strdup("EFFECTS");
 }
 
 int CNWNXEffects::CallEffectHandler(const char* handler, CNWSObject* obj, CGameEffect *eff)

@@ -5,10 +5,10 @@ extern CNWNXEffects effects;
 static int (*CGameEffect__dtor)(CGameEffect*, char);
 
 static int32_t (*Server_ExecuteCommandApplyEffectOnObject)(CNWVirtualMachineCommands *vm_cmds,
-		int cmd, int args);
+        int cmd, int args);
 
 static int32_t ExecuteCommandApplyEffectOnObject_Hook(CNWVirtualMachineCommands *vm_cmds,
-		int cmd, int args)
+        int cmd, int args)
 {
 	int dur_type;
 	CGameEffect *eff;
@@ -77,10 +77,10 @@ static int32_t ExecuteCommandApplyEffectOnObject_Hook(CNWVirtualMachineCommands 
 
 void HookExecuteCommandApplyEffectOnObject()
 {
-	*(DWORD*) &CGameEffect__dtor = 0x0817DFDC;
+    *(DWORD*) &CGameEffect__dtor = 0x0817DFDC;
 
-	*(void **)&Server_ExecuteCommandApplyEffectOnObject = nx_hook_function(
-				(void *) 0x0820db94,
-				(void *) ExecuteCommandApplyEffectOnObject_Hook,
-				5, NX_HOOK_DIRECT | NX_HOOK_RETCODE);
+    *(void **)&Server_ExecuteCommandApplyEffectOnObject = nx_hook_function(
+                (void *) 0x0820db94,
+                (void *) ExecuteCommandApplyEffectOnObject_Hook,
+                5, NX_HOOK_DIRECT | NX_HOOK_RETCODE);
 }
