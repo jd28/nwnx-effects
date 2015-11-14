@@ -28,6 +28,11 @@
 #define CUSTOM_EFFECT_SCRIPT_TICK     "on_ceff_tick"
 #define CUSTOM_EFFECT_SCRIPT_REMOVE   "on_ceff_remove"
 
+enum CustomEffect {
+    CUSTOM_EFFECT_APPLY,
+    CUSTOM_EFFECT_REMOVE,
+    CUSTOM_EFFECT_TICK
+};
 
 void HookCustomEffectUpdate();
 void HookGetScriptEffectType();
@@ -59,10 +64,10 @@ public:
     bool OnCreate(gline *nwnxConfig, const char *LogDir = NULL);
     char *OnRequest(char *gameObject, char *Request, char *Parameters);
     unsigned long OnRequestObject(char *gameObject, char *Request);
-	HANDLE hCustomApply, hCustomRemove;
 
-	int CallEffectHandler(const char* handler, CNWSObject* obj, CGameEffect *eff);
+    HANDLE hCustom;
 
+    int CallEffectHandler(CNWSObject* obj, CGameEffect *eff, CustomEffect type);
 
     /**
      * Built-in effect truetypes that trigger a additional on-apply/remove.
@@ -70,6 +75,5 @@ public:
     std::vector<uint16_t> NativeEffectsWithHandlers;
 
 private:
-	CGameEffect *currentEffect;
-	int currentResult;
+    EffectsCustomEvent effectEvent;
 };

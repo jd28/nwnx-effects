@@ -1,29 +1,22 @@
 #pragma once
 
+typedef struct {
+    /* The object on which the effect is applied/removed. */
+    CNWSObject  *object;
+    /* The effect itself. */
+    CGameEffect *effect;
+    /* Return true here if the effect cant be applied; this deletes it. */
+    bool         failed;
+    /* 0: Apply, 1: Remove, 2: Tick */
+    int32_t      type;
+} EffectsCustomEvent;
+
 /**
  * Event: EVENT_EFFECTS_CUSTOM_APPLY
- * Param: EffectsCustomApplyEvent
+ * Param: EffectsCustomEvent
  */
-#define EVENT_EFFECTS_CUSTOM_APPLY "Effects/Custom/Apply"
+#define EVENT_EFFECTS_CUSTOM "Effects/Custom"
 
-struct EffectsCustomApplyEvent {
-	/* The object on which the effect is applied/removed. */
-	CNWSObject  *object;
-	/* The effect itself. */
-	CGameEffect *effect;
-	/* Return true here if the effect cant be applied; this deletes it. */
-	bool         failed;
-};
 
 /**
- * Event: EVENT_EFFECTS_CUSTOM_REMOVE
- * Param: EffectsCustomRemoveEvent
  */
-#define EVENT_EFFECTS_CUSTOM_REMOVE "Effects/Custom/Remove"
-
-struct EffectsCustomRemoveEvent {
-	/* The object on which the effect is applied/removed. */
-	CNWSObject  *object;
-	/* The effect itself. */
-	CGameEffect *effect;
-};

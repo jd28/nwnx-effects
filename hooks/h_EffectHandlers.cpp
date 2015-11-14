@@ -19,11 +19,11 @@ static int CServerAIMaster__OnEffectApplied_Hook(CServerAIMaster *ai, CNWSObject
         CGameEffect *eff, int a4)
 
 {
-	// One of our custom effects: Always call our own handler.
-	if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
-		int ret = effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_APPLY, obj, eff);
-		return ret;
-	}
+    // One of our custom effects: Always call our own handler.
+    if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
+        int ret = effects.CallEffectHandler(obj, eff, CUSTOM_EFFECT_APPLY);
+        return ret;
+    }
 
     // Otherwise: a default bioware effect.
     int ret = CServerAIMaster__OnEffectApplied(ai, obj, eff, a4);
@@ -37,7 +37,7 @@ static int CServerAIMaster__OnEffectApplied_Hook(CServerAIMaster *ai, CNWSObject
     if (std::find(effects.NativeEffectsWithHandlers.begin(),
                   effects.NativeEffectsWithHandlers.end(), eff->Type) !=
             effects.NativeEffectsWithHandlers.end())
-		effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_APPLY, obj, eff);
+        effects.CallEffectHandler(obj, eff, CUSTOM_EFFECT_APPLY);
 
     return 0;
 }
@@ -45,17 +45,17 @@ static int CServerAIMaster__OnEffectApplied_Hook(CServerAIMaster *ai, CNWSObject
 static int CServerAIMaster__OnEffectRemoved_Hook(CServerAIMaster *ai, CNWSObject *obj,
         CGameEffect *eff)
 {
-	if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
-		int ret = effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_REMOVE, obj, eff);
-		return 1;
-	}
+    if (eff->Type >= EFFECT_TRUETYPE_CUSTOM) {
+        int ret = effects.CallEffectHandler(obj, eff, CUSTOM_EFFECT_REMOVE);
+        return 1;
+    }
 
     // Otherwise: a default bioware effect. See if the user indicated
     // he wants to have his handler tickled.
     if (std::find(effects.NativeEffectsWithHandlers.begin(),
                   effects.NativeEffectsWithHandlers.end(), eff->Type) !=
             effects.NativeEffectsWithHandlers.end())
-		effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_REMOVE, obj, eff);
+        effects.CallEffectHandler(obj, eff, CUSTOM_EFFECT_REMOVE);
 
     int ret = CServerAIMaster__OnEffectRemoved(ai, obj, eff);
 

@@ -34,7 +34,7 @@ static void TickEffect(CNWSObject* owner, CGameEffect *eff,
 
     if (!ret && (out1 > 0 || out2 > (uint32_t)(tickRate * 1000))) {
 
-        effects.CallEffectHandler(CUSTOM_EFFECT_SCRIPT_TICK, owner, eff);
+        effects.CallEffectHandler(owner, eff, CUSTOM_EFFECT_TICK);
 
         SetEffectLastTickDay(eff, day);
         SetEffectLastTickTime(eff, time);

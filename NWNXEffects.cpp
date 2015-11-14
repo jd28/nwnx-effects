@@ -7,16 +7,29 @@ CNWNXEffects::CNWNXEffects()
     confKey = strdup("EFFECTS");
 }
 
-int CNWNXEffects::CallEffectHandler(const char* handler, CNWSObject* obj, CGameEffect *eff)
+int CNWNXEffects::CallEffectHandler(CNWSObject* obj, CGameEffect *eff, CustomEffect type)
 {
-	currentEffect = eff;
-	currentResult = 0;
+    effectEvent.effect = eff;
+    effectEvent.object = obj;
+    effectEvent.type   = type;
 
-	CExoString s(handler);
-	g_pVirtualMachine->RunScript(&s, obj->ObjectID, 1);
+    if (!NotifyEventHooks(hCustom, (uintptr_t)&effectEvent)) {
+        CExoString s;
+        if (type == CUSTOM_EFFECT_REMOVE) {
+            s = CUSTOM_EFFECT_SCRIPT_REMOVE;
+        } else if (type == CUSTOM_EFFECT_APPLY) {
+            s = CUSTOM_EFFECT_SCRIPT_APPLY;
+        } else if (type == CUSTOM_EFFECT_TICK) {
+            s = CUSTOM_EFFECT_SCRIPT_TICK;
+        } else {
+            effectEvent.effect = NULL;
+            return effectEvent.failed;
+        }
+        g_pVirtualMachine->RunScript(&s, obj->ObjectID, 1);
+    }
 
-	currentEffect = NULL;
-	return currentResult;
+    effectEvent.effect = NULL;
+    return effectEvent.failed;
 }
 
 char *CNWNXEffects::OnRequest(char *gameObject, char *Request, char *Parameters)
@@ -116,14 +129,13 @@ bool CNWNXEffects::OnCreate(gline *config, const char *LogDir)
 		return false;
 	}
 
-	hCustomApply  = CreateHookableEvent(EVENT_EFFECTS_CUSTOM_APPLY);
-	hCustomRemove = CreateHookableEvent(EVENT_EFFECTS_CUSTOM_REMOVE);
+    hCustom  = CreateHookableEvent(EVENT_EFFECTS_CUSTOM);
 
-	HookGetScriptEffectType();
-	HookEffectHandlers();
-	HookCustomEffectUpdate();
-	HookExecuteCommandApplyEffectOnObject();
-	HookEffectSetNumIntegers();
+    HookGetScriptEffectType();
+    HookEffectHandlers();
+    HookCustomEffectUpdate();
+    HookExecuteCommandApplyEffectOnObject();
+    HookEffectSetNumIntegers();
 
 	return true;
 }
