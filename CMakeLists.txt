@@ -8,6 +8,7 @@ add_module(effects plugin-effects
     hooks/h_GetScriptEffectType
     hooks/h_UpdateEffectList
     hooks/h_ExecuteCommandApplyEffectOnObject
+    hooks/h_ItempropHandlers
 )
 
 set_target_properties(effects PROPERTIES COMPILE_FLAGS

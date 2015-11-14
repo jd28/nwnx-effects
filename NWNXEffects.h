@@ -34,11 +34,15 @@ enum CustomEffect {
     CUSTOM_EFFECT_TICK
 };
 
+#define CUSTOM_IP_SCRIPT_APPLY    "on_ip_apply"
+#define CUSTOM_IP_SCRIPT_REMOVE   "on_ip_remove"
+
 void HookCustomEffectUpdate();
 void HookGetScriptEffectType();
 void HookEffectHandlers();
 void HookExecuteCommandApplyEffectOnObject();
 void HookEffectSetNumIntegers();
+void HookItempropHandlers();
 
 #define EFFECT_MIN_INTEGERS        23
 
@@ -66,8 +70,10 @@ public:
     unsigned long OnRequestObject(char *gameObject, char *Request);
 
     HANDLE hCustom;
+    HANDLE hItemprop;
 
     int CallEffectHandler(CNWSObject* obj, CGameEffect *eff, CustomEffect type);
+    bool ItempropEvent(CNWSCreature *obj, CNWSItem *item, CNWItemProperty *ip, bool removal, uint32_t slot);
 
     /**
      * Built-in effect truetypes that trigger a additional on-apply/remove.
@@ -76,4 +82,5 @@ public:
 
 private:
     EffectsCustomEvent effectEvent;
+    EffectsItempropEvent itempropEvent;
 };

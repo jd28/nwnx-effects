@@ -75,6 +75,81 @@ void SetCustomEffectFailed();
  */
 object GetCustomEffectCreator();
 
+/**
+ * Custom Item Properties and You.
+ *
+ * The normal way the NWN engine applies item properties is after the item property
+ * is created on the item it fires an OnItemPropertyApplied event.  Nearly all of these
+ * create effects which are then applied to the equipper of the item as DURATION_TYPE_EQUIPPED
+ * and where the creator of the effect is the item.  This is what you should do too.
+ */
+
+
+/**
+ * Gets the item the property is being applied to.
+ *
+ * This will only work inside nwnx_effect callback scripts.
+ */
+object GetCustomItemPropertyItem();
+
+/**
+ * Gets the item property type.
+ *
+ * This will only work inside nwnx_effect callback scripts.
+ */
+int GetCustomItemPropertyType();
+
+/**
+ * Gets the item property subtype.
+ *
+ * This will only work inside nwnx_effect callback scripts.
+ */
+int GetCustomItemPropertySubType();
+
+/**
+ * Gets the item property param table as defined in itempropdef.2da
+ *
+ * This will only work inside nwnx_effect callback scripts.
+ */
+int GetCustomItemPropertyParam1();
+
+/**
+ * Gets the item property param table value.
+ *
+ * This will only work inside nwnx_effect callback scripts.
+ */
+int GetCustomItemPropertyParam1Value();
+
+/**
+ * Gets the item property cost table as defined in itempropdef.2da
+ *
+ * This will only work inside nwnx_effect callback scripts.
+ */
+int GetCustomItemPropertyCostTable();
+
+/**
+ * Gets the item property cost table value.
+ *
+ * This will only work inside nwnx_effect callback scripts.
+ */
+int GetCustomItemPropertyCostTableValue();
+
+/**
+ * Gets the item property duration type.
+ *
+ * This is added for completenes.  If you're wondering "What would
+ * I ever do with this?", the answer is probably nothing.
+ *
+ * This will only work inside nwnx_effect callback scripts.
+ */
+int GetCustomItemPropertyDurationType();
+
+/**
+ * Bypass the native OnItemPropertyApplied handler.
+ *
+ * This is useful only in cases that you'd like to override any of the default item properties.
+ */
+void BypassNativeItemProperty();
 
 int GetCustomEffectTrueType()
 {
@@ -134,4 +209,47 @@ effect EffectCustom(int truetype)
     }
 
     return ret;
+}
+
+int GetCustomItemPropertyType() {
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPTYPE", "         ");
+    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPTYPE"));
+}
+
+int GetCustomItemPropertySubType() {
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPSUBTYPE", "         ");
+    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPSUBTYPE"));
+}
+
+int GetCustomItemPropertyParam1() {
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPPARAMTABLE", "         ");
+    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPPARAMTABLE"));
+}
+
+int GetCustomItemPropertyParam1Value() {
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPPARAMVALUE", "         ");
+    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPPARAMVALUE"));
+}
+
+int GetCustomItemPropertyCostTable() {
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPCOSTTABLE", "         ");
+    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPCOSTTABLE"));
+}
+
+int GetCustomItemPropertyCostTableValue() {
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPCOSTVALUE", "         ");
+    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPCOSTVALUE"));
+}
+
+int GetCustomItemPropertyDurationType() {
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPDURTYPE", "         ");
+    return StringToInt(GetLocalString(OBJECT_SELF, "NWNX!EFFECTS!GETIPDURTYPE"));
+}
+
+object GetCustomItemPropertyItem() {
+    return GetLocalObject(OBJECT_SELF, "NWNX!EFFECTS!GETIPITEM");
+}
+
+void BypassNativeItemProperty() {
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!IPBYPASS", "1");
 }

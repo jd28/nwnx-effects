@@ -17,6 +17,17 @@ typedef struct {
  */
 #define EVENT_EFFECTS_CUSTOM "Effects/Custom"
 
+typedef struct {
+    CNWSCreature    *obj;
+    CNWSItem        *item;
+    CNWItemProperty *ip;
+    uint32_t         slot;
+    bool             suppress;
+    bool             remove;
+} EffectsItempropEvent;
 
 /**
+ * Event: EVENT_EFFECTS_IP
+ * Param: EffectsItempropEvent
  */
+#define EVENT_EFFECTS_IP "Effects/IP"

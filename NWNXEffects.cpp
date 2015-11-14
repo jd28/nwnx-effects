@@ -32,6 +32,29 @@ int CNWNXEffects::CallEffectHandler(CNWSObject* obj, CGameEffect *eff, CustomEff
     return effectEvent.failed;
 }
 
+bool CNWNXEffects::ItempropEvent(CNWSCreature *obj, CNWSItem *item, CNWItemProperty *ip, bool removal, uint32_t slot)
+{
+    itempropEvent.obj = obj;
+    itempropEvent.item = item;
+    itempropEvent.ip = ip;
+    itempropEvent.suppress = false;
+    itempropEvent.slot = slot;
+    itempropEvent.remove = removal;
+
+    if (!NotifyEventHooks(hItemprop, (uintptr_t)&itempropEvent)) {
+        CExoString s;
+        if (removal) {
+            s = CUSTOM_IP_SCRIPT_REMOVE;
+        } else {
+            s = CUSTOM_IP_SCRIPT_APPLY;
+        }
+        g_pVirtualMachine->RunScript(&s, obj->ObjectID, 1);
+    }
+
+    itempropEvent.ip = NULL;
+
+    return itempropEvent.suppress;
+}
 char *CNWNXEffects::OnRequest(char *gameObject, char *Request, char *Parameters)
 {
 	Log(1, "Request: \"%s\"\nParams: \"%s\"\n", Request, Parameters);
@@ -130,12 +153,14 @@ bool CNWNXEffects::OnCreate(gline *config, const char *LogDir)
 	}
 
     hCustom  = CreateHookableEvent(EVENT_EFFECTS_CUSTOM);
+    hItemprop  = CreateHookableEvent(EVENT_EFFECTS_IP);
 
     HookGetScriptEffectType();
     HookEffectHandlers();
     HookCustomEffectUpdate();
     HookExecuteCommandApplyEffectOnObject();
     HookEffectSetNumIntegers();
+    HookItempropHandlers();
 
-	return true;
+    return true;
 }
