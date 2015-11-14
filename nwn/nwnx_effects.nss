@@ -1,3 +1,14 @@
+
+/**
+ * Force applies an effect.
+ *
+ * This function is useful when applying an effect from an item property call back.
+ * This will allow your effects to bypass some effect application checks, such as if
+ * the target object is dead.
+ *
+ */
+void ForceApplyEffectToObject(int nDurationType, effect eEffect, object oTarget, float fDuration=0.0f);
+
 /**
  * Creates a custom effect. This requires nwnx_structs.
  *
@@ -150,6 +161,18 @@ int GetCustomItemPropertyDurationType();
  * This is useful only in cases that you'd like to override any of the default item properties.
  */
 void BypassNativeItemProperty();
+
+// Impl
+
+void ForceApplyEffectToObject(int nDurationType, effect eEffect, object oTarget, float fDuration=0.0f) {
+    SetLocalString(OBJECT_SELF, "NWNX!EFFECTS!FORCEAPPLY", "1");
+    ApplyEffectToObject(nDurationType, eEffect, oTarget, fDuration=0.0f);
+    // Hook handles clearing the force application flag.
+}
+
+void LogEffects(object obj) {
+    SetLocalString(obj, "NWNX!EFFECTS!LOG", "1");
+}
 
 int GetCustomEffectTrueType()
 {
