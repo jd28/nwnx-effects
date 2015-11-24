@@ -50,7 +50,13 @@ static int32_t ExecuteCommandApplyEffectOnObject_Hook(CNWVirtualMachineCommands 
                 ob_as_object->SetPendingEffectRemoval(1);
             }
 
-            ob_as_object->ApplyEffect(eff, 0, 1);
+            // If the second param is 0 effect handlers will not apply if the
+            // target is dead or dying.  It's necessary to override this for effects
+            // applied from ItemProperties.  If the third param is 0, it will be
+            // added to the object's effect list even if not successfully applied.
+            ob_as_object->ApplyEffect(eff, effects.forceApply, !effects.forceApply);
+            // Reset this so NWScript doesn't have to.
+            effects.forceApply = 0;
             ob_as_object->SetPendingEffectRemoval(0);
 
         } else {
