@@ -68,6 +68,7 @@ public:
     bool OnCreate(gline *nwnxConfig, const char *LogDir = NULL);
     char *OnRequest(char *gameObject, char *Request, char *Parameters);
     unsigned long OnRequestObject(char *gameObject, char *Request);
+    bool in_script = false;
 
     HANDLE hCustom;
     HANDLE hItemprop;
